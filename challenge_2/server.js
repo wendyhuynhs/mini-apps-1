@@ -5,11 +5,14 @@ const path = require('path');
 const port = 3000;
 
 const app = express();
+app.use(express.static(path.join(__dirname, '../client/dist')));
 
 app.use(morgan('dev'));
 app.use(express.urlencoded());
 
-app.get('/api', (req, res) => {
+let csv;
+
+app.get('/', (req, res) => {
   res.status(200).send(csv);
 });
 
@@ -20,7 +23,7 @@ app.post('/', (req, res) => {
   var replacer = function(key, value) {
     return value === null ? '' : value;
   };
-  let csv = data.map(row => {
+  csv = data.map(row => {
     return header
       .map(columnName => {
         return JSON.stringify(row[columnName], replacer);
@@ -28,10 +31,7 @@ app.post('/', (req, res) => {
       .join(',');
   });
   csv.unshift(header.join(','));
-  console.log(csv);
-  res.status(200).send(csv);
+  res.status(200).send('Successfully Posted');
 });
-
-app.use(express.static('client'));
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
